@@ -39,6 +39,18 @@ if (require.main === module) {
     console.log(`Tier 1 API listening on port ${port}`);
   });
 
+  if (process.env.SIMULATE_CRASH_AFTER_MS) {
+    const delay = Number(process.env.SIMULATE_CRASH_AFTER_MS);
+    if (!Number.isFinite(delay) || delay <= 0) {
+      throw new Error("SIMULATE_CRASH_AFTER_MS must be a positive number");
+    }
+
+    setTimeout(() => {
+      console.error("SIMULATION: Tier 1 is exiting with a fatal error.");
+      process.exit(1);
+    }, delay);
+  }
+
   process.on("SIGTERM", () => server.close(() => process.exit(0)));
   process.on("SIGINT", () => server.close(() => process.exit(0)));
 }

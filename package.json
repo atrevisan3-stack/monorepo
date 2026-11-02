@@ -10,7 +10,8 @@
     "test": "npm run test --workspaces --if-present",
     "start:tier-1": "npm run start --workspace=@tiers-demo/tier-1-api",
     "start:tier-2": "npm run start --workspace=@tiers-demo/tier-2-notifications",
-    "start:tier-3": "npm run start --workspace=@tiers-demo/tier-3-analytics"
+    "start:tier-3": "npm run start --workspace=@tiers-demo/tier-3-analytics",
+    "simulate:tier-1-failure": "node scripts/simulate-tier-1-failure.js"
   },
   "engines": {
     "node": ">=20"

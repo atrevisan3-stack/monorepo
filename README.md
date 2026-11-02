@@ -54,6 +54,24 @@ GET http://localhost:3002/notifications
 GET http://localhost:3003/reports/summary
 ```
 
+### Simular falha do Tier 1 mantendo o Tier 2 ativo
+
+No terminal, a partir da pasta `monorepo`, execute:
+
+```powershell
+npm.cmd run simulate:tier-1-failure
+```
+
+Se o terminal estiver na pasta acima (`TrabalhoMonorepo`), use:
+
+```powershell
+npm.cmd --prefix .\monorepo run simulate:tier-1-failure
+```
+
+O supervisor inicia os serviços dos Tiers 1 e 2, aguarda ambos ficarem saudáveis e simula uma falha fatal no Tier 1. O Tier 2 continua em execução; pressione `Ctrl+C` para encerrá-lo e terminar a simulação. Use as portas `3001` e `3002` livres e não inicie esses serviços em outros terminais ao mesmo tempo.
+
+Esse comportamento demonstra isolamento entre serviços: a falha no Tier 1 não derruba automaticamente o Tier 2. Em produção, os serviços devem tolerar falhas de dependências com timeouts, retries limitados e circuit breakers conforme a necessidade do negócio.
+
 Para executar todos os serviços em containers:
 
 ```sh
@@ -64,7 +82,7 @@ O Compose publica as mesmas portas e define healthchecks e políticas de reiníc
 
 ## CI
 
-O workflow `.github/workflows/ci.yml` executa os testes de cada workspace em jobs separados. Todos os tiers bloqueiam a CI se os seus testes falharem; a criticidade define prioridades operacionais, não deve ser motivo para aceitar silenciosamente regressões.
+O workflow `.github/workflows/ci.yml` executa os testes de cada workspace em jobs separados e também roda a simulação de falha do Tier 1, verificando que o Tier 2 continua saudável. Na CI, `SIMULATION_AUTO_STOP_MS` faz a simulação encerrar automaticamente após a verificação; localmente, ela continua aguardando `Ctrl+C`.
 
 ## Próximos passos para produção
 

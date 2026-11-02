@@ -1,0 +1,10 @@
+{
+  "name": "@tiers-demo/tier-3-analytics",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Serviço de relatórios: componente de baixa criticidade",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}

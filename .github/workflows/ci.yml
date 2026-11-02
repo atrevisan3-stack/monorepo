@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Test ${{ matrix.tier }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tier: tier-1
+            workspace: "@tiers-demo/tier-1-api"
+          - tier: tier-2
+            workspace: "@tiers-demo/tier-2-notifications"
+          - tier: tier-3
+            workspace: "@tiers-demo/tier-3-analytics"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run test --workspace=${{ matrix.workspace }}

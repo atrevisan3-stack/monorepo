@@ -1,0 +1,18 @@
+{
+  "name": "monorepo-tiers-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Exemplo de monorepo organizado por tiers de criticidade",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "start:tier-1": "npm run start --workspace=@tiers-demo/tier-1-api",
+    "start:tier-2": "npm run start --workspace=@tiers-demo/tier-2-notifications",
+    "start:tier-3": "npm run start --workspace=@tiers-demo/tier-3-analytics"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

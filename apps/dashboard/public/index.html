@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7fb">
+    <meta name="description" content="Painel ilustrativo de criticidade e disponibilidade dos serviços do monorepo.">
+    <title>TierWatch | Visão de criticidade</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navegação principal">
+        <a class="brand" href="/" aria-label="TierWatch início">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M16 3.5 27 9.75v12.5L16 28.5 5 22.25V9.75L16 3.5Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M16 9v14m-7-10 7 4 7-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>tier<span class="brand-light">watch</span><small>MONOREPO CONTROL</small></span>
+        </a>
+
+        <p class="nav-caption">WORKSPACE</p>
+        <nav class="side-nav">
+          <a class="nav-link active" href="#overview">
+            <span class="nav-icon" aria-hidden="true">⌂</span> Visão geral
+          </a>
+          <a class="nav-link" href="#services">
+            <span class="nav-icon" aria-hidden="true">▦</span> Serviços
+          </a>
+          <a class="nav-link" href="#events">
+            <span class="nav-icon" aria-hidden="true">◷</span> Eventos
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="environment-card">
+            <span class="environment-dot"></span>
+            <span><strong>Ambiente local</strong><small>DEMONSTRAÇÃO</small></span>
+            <span class="environment-menu" aria-hidden="true">···</span>
+          </div>
+          <div class="profile">
+            <div class="avatar">MO</div>
+            <span><strong>Monorepo demo</strong><small>Engenharia</small></span>
+            <span class="profile-menu" aria-hidden="true">⌄</span>
+          </div>
+        </div>
+      </aside>
+
+      <main id="overview" class="main-content">
+        <header class="topbar">
+          <div class="breadcrumbs"><span>Workspace</span><span class="crumb-separator">/</span><strong>Visão geral</strong></div>
+          <div class="topbar-right">
+            <span class="live-indicator"><span></span> MONITORAMENTO LOCAL</span>
+            <button class="icon-button" id="refresh-button" type="button" aria-label="Atualizar status" title="Atualizar status">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16.2 8A6.4 6.4 0 0 0 5 5.2L3.8 6.5M3.8 6.5V3.8m0 2.7h2.7M3.8 12a6.4 6.4 0 0 0 11.2 2.8l1.2-1.3m0 0v2.7m0-2.7h-2.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="top-avatar" aria-label="Perfil">M</div>
+          </div>
+        </header>
+
+        <div class="page-content">
+          <section class="welcome-row">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-line"></span> <span id="today-label"></span></div>
+              <h1>Criticidade sob controle<span class="heading-period">.</span></h1>
+              <p class="page-subtitle">Acompanhe a saúde dos serviços e entenda o impacto de cada tier.</p>
+            </div>
+            <button class="button button-primary" id="simulate-button" type="button">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m7.5 4.5 8 5.5-8 5.5v-11Z" fill="currentColor"/></svg>
+              <span>Simular falha do Tier 1</span>
+            </button>
+          </section>
+
+          <section class="summary-grid" aria-label="Resumo dos tiers">
+            <article class="summary-card summary-critical">
+              <div class="summary-top"><span class="summary-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 21 19H3L12 3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 9v4m0 3h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span class="tier-chip chip-critical">TIER 1</span></div>
+              <div class="summary-value" id="critical-count">1</div>
+              <div class="summary-label">Serviço crítico</div>
+              <div class="summary-foot"><span class="tiny-dot dot-critical"></span><span>Prioridade máxima de recuperação</span></div>
+            </article>
+            <article class="summary-card summary-important">
+              <div class="summary-top"><span class="summary-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5.5h16v13H4zM4 7l8 6 8-6" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><span class="tier-chip chip-important">TIER 2</span></div>
+              <div class="summary-value">1</div>
+              <div class="summary-label">Serviço importante</div>
+              <div class="summary-foot"><span class="tiny-dot dot-healthy"></span><span>Operação independente</span></div>
+            </article>
+            <article class="summary-card summary-low">
+              <div class="summary-top"><span class="summary-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h16M8 15l3-4 3 2 5-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tier-chip chip-low">TIER 3</span></div>
+              <div class="summary-value">1</div>
+              <div class="summary-label">Serviço de suporte</div>
+              <div class="summary-foot"><span class="tiny-dot dot-healthy"></span><span>Recuperação não prioritária</span></div>
+            </article>
+            <article class="summary-card summary-availability">
+              <div class="summary-top"><span class="summary-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v3m0 12v3M3 12h3m12 0h3m-2.64-6.36-2.12 2.12M7.76 16.24l-2.12 2.12m12.72 0-2.12-2.12M7.76 7.76 5.64 5.64" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/></svg></span><span class="tier-chip chip-neutral">AO VIVO</span></div>
+              <div class="summary-value summary-percent" id="availability-value">—<small>%</small></div>
+              <div class="summary-label">Serviços respondendo</div>
+              <div class="summary-foot"><span class="tiny-dot dot-blue"></span><span id="last-check">Consultando healthchecks...</span></div>
+            </article>
+          </section>
+
+          <section class="panel architecture-panel" id="services">
+            <div class="panel-heading">
+              <div><div class="section-kicker">ARQUITETURA</div><h2>Mapa de serviços</h2><p class="section-description">A falha de um componente não precisa interromper os demais.</p></div>
+              <div class="legend"><span><i class="legend-dot legend-healthy"></i>Operacional</span><span><i class="legend-dot legend-offline"></i>Indisponível</span></div>
+            </div>
+
+            <div class="architecture">
+              <div class="service-card service-tier-1" id="card-tier-1">
+                <div class="service-card-top"><span class="service-symbol symbol-critical"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 21 19H3L12 3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 9v4m0 3h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span class="status-pill" id="status-tier-1"><i></i><span>Verificando</span></span></div>
+                <div class="service-tier-label">TIER 1 <span>· CRÍTICO</span></div>
+                <h3>API de pedidos</h3>
+                <p>Fluxo principal de vendas e pedidos.</p>
+                <div class="service-meta"><span><i class="meta-dot"></i><span id="real-tier-1">Verificando serviço real</span></span><a href="http://localhost:3001/" target="_blank" rel="noreferrer">Abrir API <span aria-hidden="true">↗</span></a></div>
+              </div>
+
+              <div class="flow-link" aria-label="Serviços isolados, sem dependência obrigatória">
+                <span class="flow-line"></span><span class="flow-lock" title="Isolamento entre serviços"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="3.5" y="7.5" width="11" height="8" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M6 7.5V5.8a3 3 0 0 1 6 0v1.7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span><span class="flow-caption">ISOLADOS</span><span class="flow-line"></span>
+              </div>
+
+              <div class="service-card service-tier-2" id="card-tier-2">
+                <div class="service-card-top"><span class="service-symbol symbol-important"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16v12H4zM4 7l8 6 8-6" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><span class="status-pill" id="status-tier-2"><i></i><span>Verificando</span></span></div>
+                <div class="service-tier-label">TIER 2 <span>· IMPORTANTE</span></div>
+                <h3>Notificações</h3>
+                <p>Comunicação assíncrona com clientes.</p>
+                <div class="service-meta"><span><i class="meta-dot"></i><span id="real-tier-2">Verificando serviço real</span></span><a href="http://localhost:3002/" target="_blank" rel="noreferrer">Abrir API <span aria-hidden="true">↗</span></a></div>
+              </div>
+
+              <div class="flow-link flow-link-secondary" aria-label="Serviços isolados, sem dependência obrigatória">
+                <span class="flow-line"></span><span class="flow-lock" title="Isolamento entre serviços"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="3.5" y="7.5" width="11" height="8" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M6 7.5V5.8a3 3 0 0 1 6 0v1.7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span><span class="flow-caption">ISOLADOS</span><span class="flow-line"></span>
+              </div>
+
+              <div class="service-card service-tier-3" id="card-tier-3">
+                <div class="service-card-top"><span class="service-symbol symbol-low"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h16M8 15l3-4 3 2 5-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="status-pill" id="status-tier-3"><i></i><span>Verificando</span></span></div>
+                <div class="service-tier-label">TIER 3 <span>· SUPORTE</span></div>
+                <h3>Analytics</h3>
+                <p>Relatórios e indicadores do negócio.</p>
+                <div class="service-meta"><span><i class="meta-dot"></i><span id="real-tier-3">Verificando serviço real</span></span><a href="http://localhost:3003/" target="_blank" rel="noreferrer">Abrir API <span aria-hidden="true">↗</span></a></div>
+              </div>
+            </div>
+
+            <div class="simulation-banner" id="simulation-banner" role="status" aria-live="polite">
+              <span class="banner-icon"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2.5 18 17H2L10 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 7.5v4m0 2.5h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <span><strong id="banner-title">Tudo pronto para a demonstração</strong><small id="banner-message">Inicie a simulação para visualizar o isolamento entre tiers.</small></span>
+              <button class="banner-action" id="reset-button" type="button" hidden>Restaurar cenário</button>
+            </div>
+            <p class="simulation-note"><span>i</span> A simulação é apenas visual: não interrompe nem altera os processos reais.</p>
+          </section>
+
+          <section class="bottom-grid">
+            <article class="panel event-panel" id="events">
+              <div class="panel-heading compact-heading"><div><div class="section-kicker">ATIVIDADE</div><h2>Registro de eventos</h2></div><span class="event-count" id="event-count">0 eventos</span></div>
+              <div class="event-list" id="event-list" aria-live="polite">
+                <div class="empty-events"><span class="empty-event-icon">◷</span><span><strong>Nenhum evento ainda</strong><small>As ações da demonstração aparecerão aqui.</small></span></div>
+              </div>
+            </article>
+            <article class="panel policy-panel">
+              <div class="panel-heading compact-heading"><div><div class="section-kicker">ESTRATÉGIA</div><h2>Política por criticidade</h2></div><span class="policy-icon">✳</span></div>
+              <div class="policy-list">
+                <div><span class="policy-tier policy-one">01</span><span><strong>Recuperar primeiro</strong><small>API de pedidos · Tier crítico</small></span><span class="policy-priority">P1</span></div>
+                <div><span class="policy-tier policy-two">02</span><span><strong>Manter independente</strong><small>Notificações · Tier importante</small></span><span class="policy-priority priority-two">P2</span></div>
+                <div><span class="policy-tier policy-three">03</span><span><strong>Recuperar por último</strong><small>Analytics · Tier de suporte</small></span><span class="policy-priority priority-three">P3</span></div>
+              </div>
+            </article>
+          </section>
+          <footer class="page-footer"><span>TierWatch <b>·</b> Monorepo de demonstração</span><span id="footer-status">Atualização automática a cada 5 segundos</span></footer>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

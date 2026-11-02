@@ -1,0 +1,10 @@
+{
+  "name": "@tiers-demo/dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dashboard visual para demonstrar criticidade e isolamento dos tiers",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}

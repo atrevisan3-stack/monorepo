@@ -12,6 +12,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - tier: dashboard
+            workspace: "@tiers-demo/dashboard"
           - tier: tier-1
             workspace: "@tiers-demo/tier-1-api"
           - tier: tier-2

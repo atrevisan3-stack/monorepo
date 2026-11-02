@@ -16,6 +16,7 @@ Os serviços são exemplos sem banco de dados ou integrações externas. Os dado
 
 ```text
 apps/
+  dashboard/
   tier-1-api/
   tier-2-notifications/
   tier-3-analytics/
@@ -53,6 +54,16 @@ GET http://localhost:3001/orders
 GET http://localhost:3002/notifications
 GET http://localhost:3003/reports/summary
 ```
+
+### Dashboard ilustrativo
+
+Inicie o painel em outro terminal:
+
+```powershell
+npm.cmd run start:dashboard
+```
+
+Abra `http://localhost:3000`. O painel consulta os healthchecks reais dos serviços a cada 5 segundos; para mostrar todos como online, inicie também os três serviços em terminais separados. O botão **Simular falha do Tier 1** apresenta visualmente a falha e preserva os estados operacionais dos outros tiers. Essa demonstração é visual e não interrompe processos; os indicadores “Real” continuam mostrando a disponibilidade observada nos endpoints.
 
 ### Simular falha do Tier 1 mantendo o Tier 2 ativo
 

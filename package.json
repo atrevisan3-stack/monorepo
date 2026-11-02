@@ -11,6 +11,7 @@
     "start:tier-1": "npm run start --workspace=@tiers-demo/tier-1-api",
     "start:tier-2": "npm run start --workspace=@tiers-demo/tier-2-notifications",
     "start:tier-3": "npm run start --workspace=@tiers-demo/tier-3-analytics",
+    "start:dashboard": "npm run start --workspace=@tiers-demo/dashboard",
     "simulate:tier-1-failure": "node scripts/simulate-tier-1-failure.js"
   },
   "engines": {

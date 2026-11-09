@@ -1,0 +1,120 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
+jobs:
+  publish-tier-3:
+    name: Publish Tier 3 image
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: image
+        name: Set image name
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}-tier-3-analytics" >> "$GITHUB_OUTPUT"
+      - uses: docker/metadata-action@v5
+        id: metadata
+        with:
+          images: ${{ steps.image.outputs.name }}
+          tags: |
+            type=raw,value=${{ github.event.workflow_run.head_sha }}
+            type=raw,value=latest
+      - uses: docker/build-push-action@v6
+        with:
+          context: ./monorepo
+          file: ./monorepo/apps/tier-3-analytics/Dockerfile
+          push: true
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+
+  publish-tier-2:
+    name: Publish Tier 2 image
+    needs: publish-tier-3
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: image
+        name: Set image name
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}-tier-2-notifications" >> "$GITHUB_OUTPUT"
+      - uses: docker/metadata-action@v5
+        id: metadata
+        with:
+          images: ${{ steps.image.outputs.name }}
+          tags: |
+            type=raw,value=${{ github.event.workflow_run.head_sha }}
+            type=raw,value=latest
+      - uses: docker/build-push-action@v6
+        with:
+          context: ./monorepo
+          file: ./monorepo/apps/tier-2-notifications/Dockerfile
+          push: true
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+
+  publish-tier-1:
+    name: Publish Tier 1 image
+    needs: publish-tier-2
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: image
+        name: Set image name
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}-tier-1-api" >> "$GITHUB_OUTPUT"
+      - uses: docker/metadata-action@v5
+        id: metadata
+        with:
+          images: ${{ steps.image.outputs.name }}
+          tags: |
+            type=raw,value=${{ github.event.workflow_run.head_sha }}
+            type=raw,value=latest
+      - uses: docker/build-push-action@v6
+        with:
+          context: ./monorepo
+          file: ./monorepo/apps/tier-1-api/Dockerfile
+          push: true
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}

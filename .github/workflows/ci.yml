@@ -1,44 +1,76 @@
+
 name: CI
 
 on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Test ${{ matrix.tier }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
     strategy:
       fail-fast: false
       matrix:
         include:
-          - tier: tier-1
-            project-directory: .
-            workspace: "@tiers-demo/tier-1-api"
-          - tier: tier-2
-            project-directory: .
-            workspace: "@tiers-demo/tier-2-notifications"
-          - tier: tier-3
-            project-directory: .
-            workspace: "@tiers-demo/tier-3-analytics"
-          - tier: monorepo-tier-1
-            project-directory: monorepo
-            workspace: "@tiers-demo/tier-1-api"
-          - tier: monorepo-tier-2
-            project-directory: monorepo
-            workspace: "@tiers-demo/tier-2-notifications"
-          - tier: monorepo-tier-3
-            project-directory: monorepo
-            workspace: "@tiers-demo/tier-3-analytics"
-          - tier: monorepo-dashboard
-            project-directory: monorepo
+          - tier: dashboard
             workspace: "@tiers-demo/dashboard"
+
+          - tier: tier-1
+            workspace: "@tiers-demo/tier-1-api"
+
+          - tier: tier-2
+            workspace: "@tiers-demo/tier-2-notifications"
+
+          - tier: tier-3
+            workspace: "@tiers-demo/tier-3-analytics"
+
+    defaults:
+      run:
+        working-directory: monorepo
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install
-        working-directory: ${{ matrix.project-directory }}
-      - run: npm run test --workspace=${{ matrix.workspace }}
-        working-directory: ${{ matrix.project-directory }}
+          cache: npm
+          cache-dependency-path: monorepo/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run workspace tests
+        run: npm run test --workspace="${{ matrix.workspace }}"
+
+  netlify-tests:
+    name: Test Netlify function
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: monorepo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run Netlify function tests
+        run: node --test netlify/tests/status.test.js

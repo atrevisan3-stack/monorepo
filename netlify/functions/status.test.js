@@ -1,6 +1,6 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { handler } = require("../functions/status");
+const { handler } = require("./status");
 
 const urlVariables = ["TIER_1_URL", "TIER_2_URL", "TIER_3_URL"];
 

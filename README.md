@@ -110,6 +110,20 @@ Para permitir a publicação, habilite a permissão de escrita de pacotes para o
 
 Este CD publica as imagens; ele não atualiza containers em um servidor. Um rollout em execução requer um destino de hospedagem, que não faz parte deste exemplo.
 
+## Publicar o Dashboard na Netlify
+
+O arquivo `netlify.toml` na raiz do repositório configura a Netlify para publicar `monorepo/apps/dashboard/public` e carregar as funções de `monorepo/netlify/functions`. Ele encaminha `/api/status` para uma Netlify Function. Ao importar o repositório, use a raiz do repositório como diretório-base e deixe o comando de build vazio.
+
+Configure estas variáveis de ambiente no site da Netlify com as URLs públicas dos serviços hospedados (por exemplo, no Render):
+
+| Variável | Serviço |
+|---|---|
+| `TIER_1_URL` | API de pedidos |
+| `TIER_2_URL` | Notificações |
+| `TIER_3_URL` | Analytics |
+
+Use URLs `http://` ou `https://`, sem credenciais. A função acrescenta `/healthz`; o Dashboard usa as mesmas URLs nos links “Abrir API”. Se uma variável estiver ausente ou inválida, o serviço aparece offline e o link não é exibido. Depois de cadastrar ou alterar as variáveis, faça um novo deploy.
+
 ## Próximos passos para produção
 
 - Definir SLOs, RTO e RPO com as áreas de negócio; este projeto não presume valores de produção.

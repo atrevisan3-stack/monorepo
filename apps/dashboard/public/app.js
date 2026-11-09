@@ -67,6 +67,15 @@ async function refreshHealth() {
       const service = payload.services.find((item) => item.id === serviceId);
       const detail = document.querySelector(`#real-${serviceId}`);
       const dot = detail.previousElementSibling;
+      const link = document.querySelector(`#link-${serviceId}`);
+      if (service.url) {
+        link.href = service.url;
+        link.hidden = false;
+      } else {
+        link.removeAttribute("href");
+        link.hidden = true;
+      }
+
       if (simulationActive) {
         dot.className = service.online ? "meta-dot online" : "meta-dot offline";
         detail.textContent = `Real: ${service.online ? "online" : "offline"} · ${service.port}`;

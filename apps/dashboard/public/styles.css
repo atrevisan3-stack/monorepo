@@ -158,6 +158,7 @@ h2 { margin-bottom: 4px; color: #253149; font: 700 15px/1.3 "Segoe UI", Arial, s
 .meta-dot.online { background: #2ba77c; }
 .meta-dot.offline { background: #ddaa49; }
 .service-meta a { flex: 0 0 auto; color: #677bd2; font-weight: 600; }
+.service-meta a[hidden] { display: none; }
 .service-meta a:hover { text-decoration: underline; }
 .flow-link { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 3px; color: #aab3c2; }
 .flow-line { width: 100%; height: 1px; border-top: 1px dashed #cfd5df; }

@@ -4,9 +4,27 @@ const path = require("node:path");
 
 const publicDirectory = path.join(__dirname, "public");
 const services = [
-  { id: "tier-1", name: "API de pedidos", tier: 1, port: 3001 },
-  { id: "tier-2", name: "Notificações", tier: 2, port: 3002 },
-  { id: "tier-3", name: "Analytics", tier: 3, port: 3003 }
+  {
+    id: "tier-1",
+    name: "API de pedidos",
+    tier: 1,
+    port: 3001,
+    healthUrl: process.env.TIER_1_URL || "http://127.0.0.1:3001"
+  },
+  {
+    id: "tier-2",
+    name: "Notificações",
+    tier: 2,
+    port: 3002,
+    healthUrl: process.env.TIER_2_URL || "http://127.0.0.1:3002"
+  },
+  {
+    id: "tier-3",
+    name: "Analytics",
+    tier: 3,
+    port: 3003,
+    healthUrl: process.env.TIER_3_URL || "http://127.0.0.1:3003"
+  }
 ];
 const assets = {
   "/": { file: "index.html", type: "text/html; charset=utf-8" },
@@ -15,17 +33,18 @@ const assets = {
 };
 
 async function checkService(service) {
+  const { healthUrl, ...publicService } = service;
   try {
-    const response = await fetch(`http://127.0.0.1:${service.port}/healthz`, {
+    const response = await fetch(`${healthUrl}/healthz`, {
       signal: AbortSignal.timeout(1500)
     });
     if (!response.ok) {
-      return { ...service, online: false, detail: `HTTP ${response.status}` };
+      return { ...publicService, online: false, detail: `HTTP ${response.status}` };
     }
 
-    return { ...service, online: true, detail: "Saúde confirmada" };
+    return { ...publicService, online: true, detail: "Saúde confirmada" };
   } catch (error) {
-    return { ...service, online: false, detail: error.message };
+    return { ...publicService, online: false, detail: error.message };
   }
 }
 
@@ -76,7 +95,7 @@ if (require.main === module) {
   }
 
   const server = createServer();
-  server.listen(port, "127.0.0.1", () => {
+  server.listen(port, process.env.HOST || "127.0.0.1", () => {
     console.log(`Tier dashboard available at http://localhost:${port}`);
   });
 

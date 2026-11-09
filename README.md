@@ -83,17 +83,32 @@ O supervisor inicia os serviços dos Tiers 1 e 2, aguarda ambos ficarem saudáve
 
 Esse comportamento demonstra isolamento entre serviços: a falha no Tier 1 não derruba automaticamente o Tier 2. Em produção, os serviços devem tolerar falhas de dependências com timeouts, retries limitados e circuit breakers conforme a necessidade do negócio.
 
-Para executar todos os serviços em containers:
+### Executar tudo com Docker
 
-```sh
+1. Instale o [Docker Desktop para Windows](https://www.docker.com/products/docker-desktop/).
+2. Durante a instalação, use o backend WSL 2 se essa opção estiver disponível. Se o WSL ainda não estiver instalado, abra o PowerShell como administrador, execute `wsl --install` e reinicie o Windows quando solicitado.
+3. Abra o Docker Desktop e espere até indicar que o mecanismo Docker está em execução.
+4. No PowerShell, a partir da pasta `monorepo`, execute:
+
+```powershell
 docker compose up --build
 ```
 
-O Compose publica as mesmas portas e define healthchecks e políticas de reinício adequadas ao exemplo.
+O Compose inicia o painel e os três serviços, aguarda os healthchecks dos serviços e configura o painel para consultá-los pela rede interna do Docker. Acesse **http://localhost:3000**; as APIs permanecem disponíveis nas portas `3001`, `3002` e `3003`.
+
+Para iniciar em segundo plano, use `docker compose up --build -d`. Consulte os logs com `docker compose logs -f` e encerre/remova os containers com `docker compose down`. Se executar o comando a partir da pasta principal do projeto, use `docker compose -f .\monorepo\docker-compose.yml up --build`. Evite iniciar a mesma stack simultaneamente com os comandos `npm`, porque as portas já estarão ocupadas.
 
 ## CI
 
-O workflow `.github/workflows/ci.yml` executa os testes de cada workspace em jobs separados e também roda a simulação de falha do Tier 1, verificando que o Tier 2 continua saudável. Na CI, `SIMULATION_AUTO_STOP_MS` faz a simulação encerrar automaticamente após a verificação; localmente, ela continua aguardando `Ctrl+C`.
+O workflow de CI na raiz do repositório executa os testes dos três serviços deste exemplo antes de liberar a publicação.
+
+## CD
+
+Após uma execução bem-sucedida da CI em um push para `main`, o workflow `.github/workflows/cd.yml` publica as imagens dos três serviços no GitHub Container Registry (GHCR), em sequência de menor para maior criticidade: Tier 3, Tier 2 e Tier 1. Cada imagem recebe uma tag com o SHA do commit e a tag `latest`.
+
+Para permitir a publicação, habilite a permissão de escrita de pacotes para o `GITHUB_TOKEN` nas configurações de Actions do repositório. As imagens ficam disponíveis em `ghcr.io/<proprietário>/<repositório>-tier-<n>-<serviço>`.
+
+Este CD publica as imagens; ele não atualiza containers em um servidor. Um rollout em execução requer um destino de hospedagem, que não faz parte deste exemplo.
 
 ## Próximos passos para produção
 

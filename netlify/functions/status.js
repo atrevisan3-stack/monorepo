@@ -1,3 +1,4 @@
+
 const services = [
   {
     id: "tier-1",
@@ -24,9 +25,11 @@ const services = [
 
 function normalizeServiceUrl(value) {
   const url = new URL(value);
+
   if (url.protocol !== "http:" && url.protocol !== "https:") {
     throw new Error("A URL deve usar HTTP ou HTTPS");
   }
+
   if (url.username || url.password) {
     throw new Error("A URL não deve conter credenciais");
   }
@@ -34,7 +37,8 @@ function normalizeServiceUrl(value) {
   url.pathname = url.pathname.replace(/\/+$/, "");
   url.search = "";
   url.hash = "";
-  return url.toString().replace(/\/$/, "");
+
+  return url.toString().replace(/\/+$/, "");
 }
 
 async function checkService(service) {
@@ -43,21 +47,26 @@ async function checkService(service) {
 
   try {
     const configuredUrl = process.env[urlEnv];
+
     if (!configuredUrl) {
       throw new Error("URL não configurada");
     }
 
     url = normalizeServiceUrl(configuredUrl);
+
     const response = await fetch(`${url}/healthz`, {
-      signal: AbortSignal.timeout(3000)
+      signal: AbortSignal.timeout(5000)
     });
 
     return {
       ...publicService,
       url,
       online: response.ok,
-      detail: response.ok ? "Saúde confirmada" : `HTTP ${response.status}`
+      detail: response.ok
+        ? "Saúde confirmada"
+        : `HTTP ${response.status}`
     };
+
   } catch (error) {
     return {
       ...publicService,
@@ -69,7 +78,9 @@ async function checkService(service) {
 }
 
 exports.handler = async () => {
-  const results = await Promise.all(services.map(checkService));
+  const results = await Promise.all(
+    services.map(checkService)
+  );
 
   return {
     statusCode: 200,

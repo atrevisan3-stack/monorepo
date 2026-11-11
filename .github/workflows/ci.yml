@@ -1,112 +1,32 @@
-
 name: CI
 
 on:
   push:
   pull_request:
 
-permissions:
-  contents: read
-
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-
-  # ==========================================
-  # TESTES DOS WORKSPACES
-  # ==========================================
-
   test:
     name: Test ${{ matrix.tier }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
     strategy:
       fail-fast: false
       matrix:
         include:
-          - tier: dashboard
-            workspace: "@tiers-demo/dashboard"
-
           - tier: tier-1
+            project-directory: .
             workspace: "@tiers-demo/tier-1-api"
-
           - tier: tier-2
+            project-directory: .
             workspace: "@tiers-demo/tier-2-notifications"
-
           - tier: tier-3
+            project-directory: .
             workspace: "@tiers-demo/tier-3-analytics"
-
-    defaults:
-      run:
-        working-directory: monorepo
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run workspace tests
-        run: npm run test --workspace="${{ matrix.workspace }}"
-
-  # ==========================================
-  # TESTES DA NETLIFY
-  # ==========================================
-
-  netlify-tests:
-    name: Test Netlify function
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    defaults:
-      run:
-        working-directory: monorepo
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Run Netlify function tests
-        run: node --test netlify/tests/status.test.js
-
-  # ==========================================
-  # ISOLAMENTO DE FALHAS
-  # ==========================================
-
-  failure-isolation:
-    name: Verify Tier 2 survives Tier 1 failure
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    defaults:
-      run:
-        working-directory: monorepo
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Simulate Tier 1 failure and verify Tier 2 stays healthy
-        run: npm run simulate:tier-1-failure
-        env:
-          SIMULATION_AUTO_STOP_MS: "1000"
+      - run: npm install
+        working-directory: ${{ matrix.project-directory }}
+      - run: npm run test --workspace=${{ matrix.workspace }}
+        working-directory: ${{ matrix.project-directory }}

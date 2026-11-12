@@ -90,12 +90,6 @@ exports.handler = async () => {
     },
     body: JSON.stringify({
       checkedAt: new Date().toISOString(),
-      controls: {
-        tier1: Boolean(
-          process.env.RENDER_API_KEY &&
-          process.env.TIER_1_RENDER_SERVICE_ID
-        )
-      },
       services: results
     })
   };

@@ -126,7 +126,7 @@ Use URLs `http://` ou `https://`, sem credenciais. A função acrescenta `/healt
 
 ### Controlar o Tier 1 no Render
 
-Os botões **Suspender** e **Ligar serviço** controlam o serviço do Tier 1 pela API do Render; não alteram containers Docker locais. Para habilitá-los, adicione estas variáveis privadas no site Netlify:
+Os botões **Suspender** e **Ligar serviço** ficam visíveis no cartão do Tier 1 e controlam o serviço do Render; não alteram containers Docker locais. Para que as ações funcionem, adicione estas variáveis privadas no site Netlify:
 
 | Variável | Valor |
 |---|---|

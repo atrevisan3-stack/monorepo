@@ -63,8 +63,6 @@ async function refreshHealth() {
     const onlineCount = payload.services.filter((service) => service.online).length;
     document.querySelector("#availability-value").innerHTML = `${Math.round((onlineCount / payload.services.length) * 100)}<small>%</small>`;
     document.querySelector("#last-check").textContent = `Verificado às ${new Date(payload.checkedAt).toLocaleTimeString("pt-BR")}`;
-    document.querySelector("#tier-1-controls").hidden = !payload.controls?.tier1;
-
     for (const serviceId of serviceIds) {
       const service = payload.services.find((item) => item.id === serviceId);
       const detail = document.querySelector(`#real-${serviceId}`);

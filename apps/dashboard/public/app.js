@@ -6,6 +6,7 @@ const eventList = document.querySelector("#event-list");
 const simulationNote = document.querySelector(".simulation-note");
 let simulationActive = false;
 let refreshInProgress = false;
+let tier1ControlInProgress = false;
 
 document.querySelector("#today-label").textContent = new Intl.DateTimeFormat("pt-BR", {
   weekday: "long",
@@ -62,6 +63,7 @@ async function refreshHealth() {
     const onlineCount = payload.services.filter((service) => service.online).length;
     document.querySelector("#availability-value").innerHTML = `${Math.round((onlineCount / payload.services.length) * 100)}<small>%</small>`;
     document.querySelector("#last-check").textContent = `Verificado às ${new Date(payload.checkedAt).toLocaleTimeString("pt-BR")}`;
+    document.querySelector("#tier-1-controls").hidden = !payload.controls?.tier1;
 
     for (const serviceId of serviceIds) {
       const service = payload.services.find((item) => item.id === serviceId);
@@ -99,6 +101,61 @@ async function refreshHealth() {
   } finally {
     refreshInProgress = false;
     document.querySelector("#refresh-button").disabled = false;
+  }
+}
+
+async function controlTier1(action) {
+  if (tier1ControlInProgress) {
+    return;
+  }
+
+  if (action === "suspend" && !window.confirm("Deseja suspender a API de pedidos no Render? Ela ficará indisponível até ser ligada novamente.")) {
+    return;
+  }
+
+  const buttons = [
+    document.querySelector("#suspend-tier-1"),
+    document.querySelector("#resume-tier-1")
+  ];
+  const feedback = document.querySelector("#tier-1-control-feedback");
+  const actionLabel = action === "suspend" ? "suspensão" : "inicialização";
+  tier1ControlInProgress = true;
+  buttons.forEach((button) => {
+    button.disabled = true;
+  });
+  feedback.hidden = false;
+  feedback.textContent = `Enviando solicitação de ${actionLabel} ao Render...`;
+
+  try {
+    const response = await fetch("/api/tier-1-control", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action })
+    });
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.detail || `Não foi possível solicitar a ação (HTTP ${response.status}).`);
+    }
+
+    const successMessage = action === "suspend"
+      ? "Suspensão aceita pelo Render. O serviço pode levar alguns instantes para ficar offline."
+      : "Inicialização aceita pelo Render. O serviço pode levar alguns instantes para responder.";
+    feedback.textContent = successMessage;
+    addEvent(
+      action === "suspend" ? "Suspensão solicitada" : "Inicialização solicitada",
+      "A alteração foi enviada ao Render; o status será atualizado pelos healthchecks.",
+      true
+    );
+    window.setTimeout(refreshHealth, 3000);
+  } catch (error) {
+    feedback.textContent = error.message;
+    addEvent("Falha no controle do Tier 1", error.message);
+  } finally {
+    tier1ControlInProgress = false;
+    buttons.forEach((button) => {
+      button.disabled = false;
+    });
   }
 }
 
@@ -145,6 +202,8 @@ function resetSimulation() {
 demoButton.addEventListener("click", runSimulation);
 resetButton.addEventListener("click", resetSimulation);
 document.querySelector("#refresh-button").addEventListener("click", refreshHealth);
+document.querySelector("#suspend-tier-1").addEventListener("click", () => controlTier1("suspend"));
+document.querySelector("#resume-tier-1").addEventListener("click", () => controlTier1("resume"));
 
 refreshHealth();
 setInterval(refreshHealth, 5000);

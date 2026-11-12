@@ -1,6 +1,6 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { handler } = require("./tier-1-control");
+const { handler } = require("../../netlify/functions/tier-1-control");
 
 const configVariables = ["RENDER_API_KEY", "TIER_1_RENDER_SERVICE_ID"];
 

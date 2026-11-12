@@ -124,16 +124,16 @@ Configure estas variáveis de ambiente no site da Netlify com as URLs públicas 
 
 Use URLs `http://` ou `https://`, sem credenciais. A função acrescenta `/healthz`; o Dashboard usa as mesmas URLs nos links “Abrir API”. Se uma variável estiver ausente ou inválida, o serviço aparece offline e o link não é exibido. Depois de cadastrar ou alterar as variáveis, faça um novo deploy.
 
-### Controlar o Tier 1 no Render
+### Controlar o Tier 2 no Render
 
-Os botões **Suspender** e **Ligar serviço** ficam visíveis no cartão do Tier 1 e controlam o serviço do Render; não alteram containers Docker locais. Para que as ações funcionem, adicione estas variáveis privadas no site Netlify:
+Os botões **Suspender** e **Ligar serviço** ficam visíveis no cartão do Tier 2 (Notificações) e controlam esse serviço no Render; não alteram containers Docker locais. Para que as ações funcionem, adicione estas variáveis privadas no site Netlify:
 
 | Variável | Valor |
 |---|---|
 | `RENDER_API_KEY` | Chave de API criada nas configurações da sua conta Render |
-| `TIER_1_RENDER_SERVICE_ID` | ID do serviço de API de pedidos no Render |
+| `TIER_2_RENDER_SERVICE_ID` | ID do serviço de Notificações no Render |
 
-Ative a proteção de acesso para **todos os deploys de produção** do site na Netlify. A função aceita apenas requisições `POST` da mesma origem, e o token Render nunca é enviado ao navegador. A chave da API do Render é sensível e pode dar acesso amplo à conta; não a coloque no repositório, no Dashboard ou em variáveis públicas. Suspenda o serviço somente quando estiver ciente de que a API de pedidos ficará indisponível. O Render pode levar alguns instantes para efetivar a suspensão ou a retomada.
+Ative a proteção de acesso para **todos os deploys de produção** do site na Netlify. A função aceita apenas requisições `POST` da mesma origem, e o token Render nunca é enviado ao navegador. A chave da API do Render é sensível e pode dar acesso amplo à conta; não a coloque no repositório, no Dashboard ou em variáveis públicas. Suspender o serviço interrompe o envio de notificações até a retomada; o Render pode levar alguns instantes para efetivar a suspensão ou a retomada.
 
 ## Próximos passos para produção
 

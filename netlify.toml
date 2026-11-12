@@ -11,6 +11,6 @@
   status = 200
 
 [[redirects]]
-  from = "/api/tier-1-control"
-  to = "/.netlify/functions/tier-1-control"
+  from = "/api/tier-2-control"
+  to = "/.netlify/functions/tier-2-control"
   status = 200

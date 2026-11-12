@@ -6,7 +6,7 @@ const eventList = document.querySelector("#event-list");
 const simulationNote = document.querySelector(".simulation-note");
 let simulationActive = false;
 let refreshInProgress = false;
-let tier1ControlInProgress = false;
+let tier2ControlInProgress = false;
 
 document.querySelector("#today-label").textContent = new Intl.DateTimeFormat("pt-BR", {
   weekday: "long",
@@ -102,22 +102,22 @@ async function refreshHealth() {
   }
 }
 
-async function controlTier1(action) {
-  if (tier1ControlInProgress) {
+async function controlTier2(action) {
+  if (tier2ControlInProgress) {
     return;
   }
 
-  if (action === "suspend" && !window.confirm("Deseja suspender a API de pedidos no Render? Ela ficará indisponível até ser ligada novamente.")) {
+  if (action === "suspend" && !window.confirm("Deseja suspender o serviço de notificações no Render? Ele ficará indisponível até ser ligado novamente.")) {
     return;
   }
 
   const buttons = [
-    document.querySelector("#suspend-tier-1"),
-    document.querySelector("#resume-tier-1")
+    document.querySelector("#suspend-tier-2"),
+    document.querySelector("#resume-tier-2")
   ];
-  const feedback = document.querySelector("#tier-1-control-feedback");
+  const feedback = document.querySelector("#tier-2-control-feedback");
   const actionLabel = action === "suspend" ? "suspensão" : "inicialização";
-  tier1ControlInProgress = true;
+  tier2ControlInProgress = true;
   buttons.forEach((button) => {
     button.disabled = true;
   });
@@ -125,7 +125,7 @@ async function controlTier1(action) {
   feedback.textContent = `Enviando solicitação de ${actionLabel} ao Render...`;
 
   try {
-    const response = await fetch("/api/tier-1-control", {
+    const response = await fetch("/api/tier-2-control", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action })
@@ -148,9 +148,9 @@ async function controlTier1(action) {
     window.setTimeout(refreshHealth, 3000);
   } catch (error) {
     feedback.textContent = error.message;
-    addEvent("Falha no controle do Tier 1", error.message);
+    addEvent("Falha no controle do Tier 2", error.message);
   } finally {
-    tier1ControlInProgress = false;
+    tier2ControlInProgress = false;
     buttons.forEach((button) => {
       button.disabled = false;
     });
@@ -200,8 +200,8 @@ function resetSimulation() {
 demoButton.addEventListener("click", runSimulation);
 resetButton.addEventListener("click", resetSimulation);
 document.querySelector("#refresh-button").addEventListener("click", refreshHealth);
-document.querySelector("#suspend-tier-1").addEventListener("click", () => controlTier1("suspend"));
-document.querySelector("#resume-tier-1").addEventListener("click", () => controlTier1("resume"));
+document.querySelector("#suspend-tier-2").addEventListener("click", () => controlTier2("suspend"));
+document.querySelector("#resume-tier-2").addEventListener("click", () => controlTier2("resume"));
 
 refreshHealth();
 setInterval(refreshHealth, 5000);

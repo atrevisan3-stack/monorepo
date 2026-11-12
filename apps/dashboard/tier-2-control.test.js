@@ -1,8 +1,8 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { handler } = require("../../netlify/functions/tier-1-control");
+const { handler } = require("../../netlify/functions/tier-2-control");
 
-const configVariables = ["RENDER_API_KEY", "TIER_1_RENDER_SERVICE_ID"];
+const configVariables = ["RENDER_API_KEY", "TIER_2_RENDER_SERVICE_ID"];
 
 function setup(t, { apiKey = "test-api-key", serviceId = "srv-test123" } = {}) {
   const previousValues = Object.fromEntries(
@@ -10,7 +10,7 @@ function setup(t, { apiKey = "test-api-key", serviceId = "srv-test123" } = {}) {
   );
   const originalFetch = global.fetch;
   process.env.RENDER_API_KEY = apiKey;
-  process.env.TIER_1_RENDER_SERVICE_ID = serviceId;
+  process.env.TIER_2_RENDER_SERVICE_ID = serviceId;
 
   t.after(() => {
     for (const [name, value] of Object.entries(previousValues)) {
@@ -33,7 +33,7 @@ function event(action, overrides = {}) {
   };
 }
 
-test("suspend and resume call only the configured Render service", async (t) => {
+test("suspend and resume call only the configured Tier 2 Render service", async (t) => {
   setup(t);
   const requests = [];
   global.fetch = async (url, options) => {
@@ -78,11 +78,11 @@ test("reports missing Render configuration and upstream errors", async (t) => {
   assert.equal(notConfigured.statusCode, 503);
   assert.equal(
     JSON.parse(notConfigured.body).detail,
-    "Configure RENDER_API_KEY e TIER_1_RENDER_SERVICE_ID nas variáveis de ambiente da Netlify."
+    "Configure RENDER_API_KEY e TIER_2_RENDER_SERVICE_ID nas variáveis de ambiente da Netlify."
   );
 
   process.env.RENDER_API_KEY = "test-api-key";
-  process.env.TIER_1_RENDER_SERVICE_ID = "srv-test123";
+  process.env.TIER_2_RENDER_SERVICE_ID = "srv-test123";
   global.fetch = async () => ({ ok: false, status: 401 });
 
   const rejected = await handler(event("resume"));

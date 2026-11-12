@@ -35,12 +35,12 @@ exports.handler = async (event) => {
   }
 
   const apiKey = process.env.RENDER_API_KEY;
-  const serviceId = process.env.TIER_1_RENDER_SERVICE_ID;
+  const serviceId = process.env.TIER_2_RENDER_SERVICE_ID;
 
   if (!apiKey || !serviceId) {
     return jsonResponse(503, {
       error: "render_control_not_configured",
-      detail: "Configure RENDER_API_KEY e TIER_1_RENDER_SERVICE_ID nas variáveis de ambiente da Netlify."
+      detail: "Configure RENDER_API_KEY e TIER_2_RENDER_SERVICE_ID nas variáveis de ambiente da Netlify."
     });
   }
 

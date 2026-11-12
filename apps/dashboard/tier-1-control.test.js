@@ -76,6 +76,10 @@ test("reports missing Render configuration and upstream errors", async (t) => {
   setup(t, { apiKey: "", serviceId: "" });
   const notConfigured = await handler(event("suspend"));
   assert.equal(notConfigured.statusCode, 503);
+  assert.equal(
+    JSON.parse(notConfigured.body).detail,
+    "Configure RENDER_API_KEY e TIER_1_RENDER_SERVICE_ID nas variáveis de ambiente da Netlify."
+  );
 
   process.env.RENDER_API_KEY = "test-api-key";
   process.env.TIER_1_RENDER_SERVICE_ID = "srv-test123";
